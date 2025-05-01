@@ -1,6 +1,6 @@
 package models
 
 type Duck struct {
-	Name string
-	Age int
+	Name string `json:"name"`
+	Age int `json:"age"`
 }
