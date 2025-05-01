@@ -22,6 +22,8 @@ func Start(db *db.DucksDB) {
 	r.HandleFunc("CREATE /", h.Create)
 	r.HandleFunc("GET /{name}", h.Get)
 	r.HandleFunc("GET /", h.GetAll)
+
+	http.ListenAndServe(":4242", r)
 }
 
 func (h Handler) HandleSendingError(w http.ResponseWriter, err error) {
