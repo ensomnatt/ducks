@@ -1,0 +1,8 @@
+#log level
+ENV=local
+
+#postgres username
+POSTGRES_USER=myapi
+
+#postgres password
+POSTGRES_PASSWORD=12321
