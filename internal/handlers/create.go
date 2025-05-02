@@ -3,12 +3,17 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/ensomnatt/ducks/internal/logger"
+	"github.com/ensomnatt/ducks/internal/metrics"
 	"github.com/ensomnatt/ducks/internal/models"
 )
 
 func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+
 	var req models.Duck
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
@@ -35,6 +40,16 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	logger.Log.Debug("setted up a header")
+
+	duration := time.Since(start).Seconds()
+
+	metrics.HttpRequests.WithLabelValues(
+		r.Method,
+		r.URL.Path,
+		strconv.Itoa(http.StatusCreated),
+	).Inc()
+	metrics.RequestDuration.WithLabelValues(r.Method, r.URL.Path).Observe(duration)
+	logger.Log.Debug("updated metrics")
 
 	return
 }

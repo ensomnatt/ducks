@@ -7,6 +7,7 @@ import (
 
 	"github.com/ensomnatt/ducks/internal/db"
 	"github.com/ensomnatt/ducks/internal/logger"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type Handler struct {
@@ -19,9 +20,10 @@ func Start(db *db.DucksDB) {
 		db: db,
 	}
 
-	r.HandleFunc("CREATE /", h.Create)
-	r.HandleFunc("GET /{name}", h.Get)
-	r.HandleFunc("GET /", h.GetAll)
+	r.Handle("/metrics", promhttp.Handler())
+	r.HandleFunc("CREATE /api/create", h.Create)
+	r.HandleFunc("GET /api/{name}", h.Get)
+	r.HandleFunc("GET /api/all", h.GetAll)
 
 	http.ListenAndServe(":4242", r)
 }

@@ -3,11 +3,16 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/ensomnatt/ducks/internal/logger"
+	"github.com/ensomnatt/ducks/internal/metrics"
 )
 
 func (h Handler) GetAll(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+
 	logger.Log.Debug("got request", "request", "get all ducks")
 
 	ctx, cancel := h.CreateContext()
@@ -34,5 +39,16 @@ func (h Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 	}
 
 	logger.Log.Info("got all ducks", "ducks", ducks)
+
+	duration := time.Since(start).Seconds()
+
+	metrics.HttpRequests.WithLabelValues(
+		r.Method,
+		r.URL.Path,
+		strconv.Itoa(http.StatusOK),
+	).Inc()
+	metrics.RequestDuration.WithLabelValues(r.Method, r.URL.Path).Observe(duration)
+	logger.Log.Debug("updated metrics")
+
 	return
 }

@@ -5,12 +5,17 @@ import (
 	"errors"
 	"net/http"
 	"path"
+	"strconv"
+	"time"
 
 	"github.com/ensomnatt/ducks/internal/logger"
+	"github.com/ensomnatt/ducks/internal/metrics"
 	"github.com/jackc/pgx/v5"
 )
 
 func (h Handler) Get(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+
 	name := path.Base(r.URL.Path)
 
 	logger.Log.Debug("got request", "request", "get a duck", "name", name)
@@ -43,5 +48,16 @@ func (h Handler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	logger.Log.Debug("sent a response")
+
+	duration := time.Since(start).Seconds()
+
+	metrics.HttpRequests.WithLabelValues(
+		r.Method,
+		r.URL.Path,
+		strconv.Itoa(http.StatusOK),
+	).Inc()
+	metrics.RequestDuration.WithLabelValues(r.Method, r.URL.Path).Observe(duration)
+	logger.Log.Debug("updated metrics")
+
 	return
 }
