@@ -7,12 +7,12 @@ import (
 
 var (
 	HttpRequests = promauto.NewCounterVec(prometheus.CounterOpts{
-		Name: "http_requests_total",
+		Name: "ducks_requests_total",
 		Help: "total http requests",
 	}, []string{"method", "path", "status"})
 
 	RequestDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
-		Name: "http_request_duration_seconds",
+		Name: "ducks_request_duration_seconds",
 		Help: "http request duration in seconds",
 		Buckets: prometheus.DefBuckets,
 	}, []string{"method", "path"})
