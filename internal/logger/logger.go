@@ -15,11 +15,7 @@ func init() {
 	var handler slog.Handler
 
 	switch env {
-	case "local":
-		handler = slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-			Level: slog.LevelDebug,
-		})
-	case "dev":
+	case "local", "", "dev":
 		handler = slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
 			Level: slog.LevelDebug,
 		})
